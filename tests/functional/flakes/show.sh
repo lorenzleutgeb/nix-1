@@ -8,6 +8,7 @@ cd "$flakeDir"
 
 # Check the flake reference that was produced.
 nix flake show --json > output.json
+jq -r 'keys[0]' < output.json
 nix eval --impure --expr '
 with builtins;
 let
@@ -17,7 +18,7 @@ let
     else "sha256-op9gWTEmDXergxx2PojSTrxVREG7NLcrhySSun3DQd0="
   ;
 in
-assert flakeRef.narHash == hash;
+assert flakeRef.narHash == trace "hash: ${hash}" hash;
 assert flakeRef.type == "path";
 assert flakeRef.path == "/build/nix-test/flakes/show/flake";
 true
